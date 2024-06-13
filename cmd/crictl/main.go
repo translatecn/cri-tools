@@ -145,7 +145,7 @@ func main() {
 		removePodCommand,
 		listPodCommand,
 		startContainerCommand,
-		runtimeStatusCommand,
+		runtimeStatusCommand, // ✅
 		stopContainerCommand,
 		stopPodCommand,
 		updateContainerCommand,
