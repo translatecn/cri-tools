@@ -46,41 +46,18 @@ var (
 	loopLogDefaultLinuxCmd = []string{"sh", "-c", "while true; do echo " + defaultLog + "; sleep 1; done"}
 	echoHelloLinuxOutput   = "hello"
 	checkPathLinuxCmd      = func(path string) []string { return []string{"ls", "-A", path} }
-
-	// Windows defaults
-	echoHelloWindowsCmd      = []string{"powershell", "-c", "echo hello"}
-	sleepWindowsCmd          = []string{"powershell", "-c", "start-sleep 4321"}
-	checkSleepWindowsCmd     = []string{"powershell", "-c", "get-process | findstr sleep; exit 0"}
-	shellWindowsCmd          = []string{"cmd", "/Q"}
-	pauseWindowsCmd          = []string{"powershell", "-c", "ping -t localhost"}
-	logDefaultWindowsCmd     = []string{"powershell", "-c", "echo '" + defaultLog + "'"}
-	loopLogDefaultWindowsCmd = []string{"powershell", "-c", "while($true) { echo '" + defaultLog + "'; sleep 1; }"}
-	echoHelloWindowsOutput   = "hello\r\n"
-	checkPathWindowsCmd      = func(path string) []string { return []string{"powershell", "-c", "ls", path} }
 )
 
 var _ = framework.AddBeforeSuiteCallback(func() {
-	if runtime.GOOS != "windows" || framework.TestContext.IsLcow {
-		echoHelloCmd = echoHelloLinuxCmd
-		sleepCmd = sleepLinuxCmd
-		checkSleepCmd = checkSleepLinuxCmd
-		shellCmd = shellLinuxCmd
-		pauseCmd = pauseLinuxCmd
-		logDefaultCmd = logDefaultLinuxCmd
-		loopLogDefaultCmd = loopLogDefaultLinuxCmd
-		echoHelloOutput = echoHelloLinuxOutput
-		checkPathCmd = checkPathLinuxCmd
-	} else {
-		echoHelloCmd = echoHelloWindowsCmd
-		sleepCmd = sleepWindowsCmd
-		checkSleepCmd = checkSleepWindowsCmd
-		shellCmd = shellWindowsCmd
-		pauseCmd = pauseWindowsCmd
-		logDefaultCmd = logDefaultWindowsCmd
-		loopLogDefaultCmd = loopLogDefaultWindowsCmd
-		echoHelloOutput = echoHelloWindowsOutput
-		checkPathCmd = checkPathWindowsCmd
-	}
+	echoHelloCmd = echoHelloLinuxCmd
+	sleepCmd = sleepLinuxCmd
+	checkSleepCmd = checkSleepLinuxCmd
+	shellCmd = shellLinuxCmd
+	pauseCmd = pauseLinuxCmd
+	logDefaultCmd = logDefaultLinuxCmd
+	loopLogDefaultCmd = loopLogDefaultLinuxCmd
+	echoHelloOutput = echoHelloLinuxOutput
+	checkPathCmd = checkPathLinuxCmd
 })
 
 // Image test constants
@@ -105,12 +82,6 @@ const (
 	testLinuxImageWithTag           = registry + "test-image-tag:test"
 	testLinuxImageWithDigest        = registry + "test-image-digest@sha256:9700f9a2f5bf2c45f2f605a0bd3bce7cf37420ec9d3ed50ac2758413308766bf"
 	testLinuxImageWithAllReferences = registry + "test-image-tag:all"
-
-	// Windows defaults
-	testWindowsImageWithoutTag        = registry + "win-test-image-latest"
-	testWindowsImageWithTag           = registry + "win-test-image-tag:test"
-	testWindowsImageWithDigest        = registry + "win-test-image-digest@sha256:0e8cc62aee4ed03eb85150eb86e5d1fd7bda705511b8951fe6507835cbd34be3"
-	testWindowsImageWithAllReferences = registry + "win-test-image-tag:all"
 )
 
 var (
@@ -146,36 +117,15 @@ var (
 		registry + "test-image-tags:2",
 		registry + "test-image-tags:3",
 	}
-
-	// Windows defaults
-	testWindowsDifferentTagDifferentImageList = []string{
-		registry + "win-test-image-1:latest",
-		registry + "win-test-image-2:latest",
-		registry + "win-test-image-3:latest",
-	}
-	testWindowsDifferentTagSameImageList = []string{
-		registry + "win-test-image-tags:1",
-		registry + "win-test-image-tags:2",
-		registry + "win-test-image-tags:3",
-	}
 )
 
 var _ = framework.AddBeforeSuiteCallback(func() {
-	if runtime.GOOS != "windows" || framework.TestContext.IsLcow {
-		testImageWithoutTag = testLinuxImageWithoutTag
-		testImageWithTag = testLinuxImageWithTag
-		testImageWithDigest = testLinuxImageWithDigest
-		testImageWithAllReferences = testLinuxImageWithAllReferences
-		testDifferentTagDifferentImageList = testLinuxDifferentTagDifferentImageList
-		testDifferentTagSameImageList = testLinuxDifferentTagSameImageList
-	} else {
-		testImageWithoutTag = testWindowsImageWithoutTag
-		testImageWithTag = testWindowsImageWithTag
-		testImageWithDigest = testWindowsImageWithDigest
-		testImageWithAllReferences = testWindowsImageWithAllReferences
-		testDifferentTagDifferentImageList = testWindowsDifferentTagDifferentImageList
-		testDifferentTagSameImageList = testWindowsDifferentTagSameImageList
-	}
+	testImageWithoutTag = testLinuxImageWithoutTag
+	testImageWithTag = testLinuxImageWithTag
+	testImageWithDigest = testLinuxImageWithDigest
+	testImageWithAllReferences = testLinuxImageWithAllReferences
+	testDifferentTagDifferentImageList = testLinuxDifferentTagDifferentImageList
+	testDifferentTagSameImageList = testLinuxDifferentTagSameImageList
 	testImagePodSandbox = &runtimeapi.PodSandboxConfig{
 		Labels: framework.DefaultPodLabels,
 	}
@@ -220,32 +170,14 @@ var (
 		"options " + defaultDNSOption,
 	}
 	getHostnameLinuxCmd = []string{"hostname"}
-
-	// Windows defaults
-	// Windows doesn't support ndots options.
-	// https://kubernetes.io/docs/setup/production-environment/windows/intro-windows-in-kubernetes/#dns-limitations
-	getDNSConfigWindowsCmd     = []string{"powershell", "/c", "ipconfig /all"}
-	getDNSConfigWindowsContent = []string{
-		"DNS Servers . . . . . . . . . . . : " + defaultDNSServer,
-		"DNS Suffix Search List. . . . . . : " + defaultDNSSearch,
-	}
-	getHostnameWindowsCmd = []string{"powershell", "/c", "$env:computername"}
 )
 
 var _ = framework.AddBeforeSuiteCallback(func() {
-	if runtime.GOOS != "windows" || framework.TestContext.IsLcow {
-		webServerImage = webServerLinuxImage
-		hostNetWebServerImage = hostNetWebServerLinuxImage
-		getDNSConfigCmd = getDNSConfigLinuxCmd
-		getDNSConfigContent = getDNSConfigLinuxContent
-		getHostnameCmd = getHostnameLinuxCmd
-	} else {
-		webServerImage = webServerWindowsImage
-		hostNetWebServerImage = hostNetWebServerWindowsImage
-		getDNSConfigCmd = getDNSConfigWindowsCmd
-		getDNSConfigContent = getDNSConfigWindowsContent
-		getHostnameCmd = getHostnameWindowsCmd
-	}
+	webServerImage = webServerLinuxImage
+	hostNetWebServerImage = hostNetWebServerLinuxImage
+	getDNSConfigCmd = getDNSConfigLinuxCmd
+	getDNSConfigContent = getDNSConfigLinuxContent
+	getHostnameCmd = getHostnameLinuxCmd
 
 	// Override the web server test image if an explicit one is provided:
 	if framework.TestContext.TestImageList.WebServerTestImage != "" {
@@ -261,9 +193,6 @@ const (
 
 	// Linux defaults
 	attachEchoHelloLinuxOutput = "hello"
-
-	// Windows defaults
-	attachEchoHelloWindowsOutput = "hello\r\n\r\nC:\\>"
 )
 
 var (
@@ -271,9 +200,5 @@ var (
 )
 
 var _ = framework.AddBeforeSuiteCallback(func() {
-	if runtime.GOOS != "windows" || framework.TestContext.IsLcow {
-		attachEchoHelloOutput = attachEchoHelloLinuxOutput
-	} else {
-		attachEchoHelloOutput = attachEchoHelloWindowsOutput
-	}
+	attachEchoHelloOutput = attachEchoHelloLinuxOutput
 })

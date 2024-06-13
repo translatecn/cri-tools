@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -63,20 +62,6 @@ var (
 
 	// DefaultLinuxPauseCommand default container command for Linux pause
 	DefaultLinuxPauseCommand = []string{"sh", "-c", "top"}
-
-	// DefaultLcowPodLabels default pod labels for Linux containers on Windows
-	DefaultLcowPodLabels = map[string]string{
-		"sandbox-platform": "linux/amd64",
-	}
-
-	// DefaultWindowsPodLabels default pod labels for Windows
-	DefaultWindowsPodLabels = map[string]string{}
-
-	// DefaultWindowsContainerCommand default container command for Windows
-	DefaultWindowsContainerCommand = []string{"cmd", "/c", "ping -t localhost"}
-
-	// DefaultWindowsPauseCommand default container pause command for Windows
-	DefaultWindowsPauseCommand = []string{"powershell", "-c", "ping -t localhost"}
 )
 
 const (
@@ -94,28 +79,14 @@ const (
 
 	// DefaultLinuxContainerImage default container image for Linux
 	DefaultLinuxContainerImage string = DefaultRegistryE2ETestImagesPrefix + "busybox:1.29-2"
-
-	// DefaultWindowsContainerImage default container image for Windows
-	DefaultWindowsContainerImage string = DefaultLinuxContainerImage
 )
 
 // Set the constants based on operating system and flags
 var _ = BeforeSuite(func() {
-	if runtime.GOOS != "windows" || TestContext.IsLcow {
-		DefaultPodLabels = DefaultLinuxPodLabels
-		DefaultContainerCommand = DefaultLinuxContainerCommand
-		DefaultPauseCommand = DefaultLinuxPauseCommand
-		TestContext.TestImageList.DefaultTestContainerImage = DefaultLinuxContainerImage
-
-		if TestContext.IsLcow {
-			DefaultPodLabels = DefaultLcowPodLabels
-		}
-	} else {
-		DefaultPodLabels = DefaultWindowsPodLabels
-		DefaultContainerCommand = DefaultWindowsContainerCommand
-		DefaultPauseCommand = DefaultWindowsPauseCommand
-		TestContext.TestImageList.DefaultTestContainerImage = DefaultWindowsContainerImage
-	}
+	DefaultPodLabels = DefaultLinuxPodLabels
+	DefaultContainerCommand = DefaultLinuxContainerCommand
+	DefaultPauseCommand = DefaultLinuxPauseCommand
+	TestContext.TestImageList.DefaultTestContainerImage = DefaultLinuxContainerImage
 
 	// Load any custom image definitions:
 	err := TestContext.LoadYamlConfigFiles()

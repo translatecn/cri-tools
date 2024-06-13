@@ -19,7 +19,6 @@ package validate
 import (
 	"context"
 	"fmt"
-	"runtime"
 	"sort"
 
 	"github.com/kubernetes-sigs/cri-tools/pkg/framework"
@@ -81,48 +80,46 @@ var _ = framework.KubeDescribe("Image Manager", func() {
 		testRemoveImage(c, imageName)
 	})
 
-	if runtime.GOOS != "windows" || framework.TestContext.IsLcow {
-		It("image status get image fields should not have Uid|Username empty [Conformance]", func() {
-			for _, item := range []struct {
-				description string
-				image       string
-				uid         int64
-				username    string
-			}{
-				{
-					description: "UID only",
-					image:       testImageUserUID,
-					uid:         imageUserUID,
-					username:    "",
-				},
-				{
-					description: "Username only",
-					image:       testImageUserUsername,
-					uid:         int64(0),
-					username:    imageUserUsername,
-				},
-				{
-					description: "UID:group",
-					image:       testImageUserUIDGroup,
-					uid:         imageUserUIDGroup,
-					username:    "",
-				},
-				{
-					description: "Username:group",
-					image:       testImageUserUsernameGroup,
-					uid:         int64(0),
-					username:    imageUserUsernameGroup,
-				},
-			} {
-				framework.PullPublicImage(c, item.image, testImagePodSandbox)
-				defer removeImage(c, item.image)
+	It("image status get image fields should not have Uid|Username empty [Conformance]", func() {
+		for _, item := range []struct {
+			description string
+			image       string
+			uid         int64
+			username    string
+		}{
+			{
+				description: "UID only",
+				image:       testImageUserUID,
+				uid:         imageUserUID,
+				username:    "",
+			},
+			{
+				description: "Username only",
+				image:       testImageUserUsername,
+				uid:         int64(0),
+				username:    imageUserUsername,
+			},
+			{
+				description: "UID:group",
+				image:       testImageUserUIDGroup,
+				uid:         imageUserUIDGroup,
+				username:    "",
+			},
+			{
+				description: "Username:group",
+				image:       testImageUserUsernameGroup,
+				uid:         int64(0),
+				username:    imageUserUsernameGroup,
+			},
+		} {
+			framework.PullPublicImage(c, item.image, testImagePodSandbox)
+			defer removeImage(c, item.image)
 
-				status := framework.ImageStatus(c, item.image)
-				Expect(status.GetUid().GetValue()).To(Equal(item.uid), fmt.Sprintf("%s, Image Uid should be %d", item.description, item.uid))
-				Expect(status.GetUsername()).To(Equal(item.username), fmt.Sprintf("%s, Image Username should be %s", item.description, item.username))
-			}
-		})
-	}
+			status := framework.ImageStatus(c, item.image)
+			Expect(status.GetUid().GetValue()).To(Equal(item.uid), fmt.Sprintf("%s, Image Uid should be %d", item.description, item.uid))
+			Expect(status.GetUsername()).To(Equal(item.username), fmt.Sprintf("%s, Image Username should be %s", item.description, item.username))
+		}
+	})
 
 	It("listImage should get exactly 3 image in the result list [Conformance]", func() {
 		// Make sure test image does not exist.
