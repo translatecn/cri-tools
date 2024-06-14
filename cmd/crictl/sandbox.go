@@ -55,7 +55,7 @@ var runPodCommand = &cli.Command{
 		&cli.DurationFlag{
 			Name:    "cancel-timeout",
 			Aliases: []string{"T"},
-			Value:   0,
+			Value:   time.Hour,
 			Usage:   "Seconds to wait for a run pod sandbox request to complete before cancelling the request",
 		},
 	},

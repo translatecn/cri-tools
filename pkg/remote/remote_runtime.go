@@ -132,7 +132,9 @@ func NewRemoteRuntimeService(endpoint string, connectionTimeout time.Duration, t
 	dialOpts := []grpc.DialOption{}
 	dialOpts = append(dialOpts,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMsgSize)))
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMsgSize)),
+		grpc.WithTimeout(connectionTimeout),
+	)
 	if utilfeature.DefaultFeatureGate.Enabled(features.KubeletTracing) {
 		tracingOpts := []otelgrpc.Option{
 			otelgrpc.WithPropagators(tracing.Propagators()),
