@@ -27,7 +27,7 @@ import (
 	"k8s.io/kubernetes/pkg/kubelet/cri/remote"
 )
 
-var runtimeVersionCommand = &cli.Command{
+var overRuntimeVersionCommand = &cli.Command{
 	Name:  "version",
 	Usage: "Display runtime version information",
 	Action: func(c *cli.Context) error {

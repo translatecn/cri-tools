@@ -128,7 +128,6 @@ func main() {
 		runtimeAttachCommand,
 		createContainerCommand,
 		runtimeExecCommand,
-		runtimeVersionCommand,
 		listImageCommand,
 		containerStatusCommand,
 		imageStatusCommand,
@@ -145,7 +144,8 @@ func main() {
 		removePodCommand,
 		listPodCommand,
 		startContainerCommand,
-		runtimeStatusCommand, // ✅
+		runtimeStatusCommand,      // ✅
+		overRuntimeVersionCommand, // ✅
 		stopContainerCommand,
 		stopPodCommand,
 		updateContainerCommand,
